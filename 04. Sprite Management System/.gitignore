@@ -1,3 +1,8 @@
 /.gradle
 /.ra
 
+*.dbg
+*.prg
+*.sym
+*.vs
+*.specOut
