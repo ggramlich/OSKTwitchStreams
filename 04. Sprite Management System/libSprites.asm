@@ -1,3 +1,5 @@
+#import "Constants.asm"
+
 //--------------------------------------------------------------------------------------------------------
 // Library of functions to apply to sprites for anything.
 
