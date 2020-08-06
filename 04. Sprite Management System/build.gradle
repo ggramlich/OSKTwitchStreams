@@ -1,0 +1,19 @@
+plugins {
+    id "com.github.c64lib.retro-assembler" version "1.0.1"
+}
+
+repositories {
+    jcenter()
+}
+
+apply plugin: "com.github.c64lib.retro-assembler"
+
+retroProject {
+    dialect = "KickAssembler"
+    dialectVersion = "5.16"
+    libDirs = [".ra/deps/c64lib", ".ra/deps/64bites/64core/lib", "lib"]
+    srcDirs = [".", "spec"]
+
+    // dependencies
+    libFromGitHub "c64lib/64spec", "0.7.0pr"
+}
