@@ -1,5 +1,5 @@
-#import "64spec/lib/64spec.asm"
-#import "libSprites.asm"
+#import "../.ra/deps/c64lib/64spec/lib/64spec.asm"
+#import "../libSprites.asm"
 
 initState:
 {
