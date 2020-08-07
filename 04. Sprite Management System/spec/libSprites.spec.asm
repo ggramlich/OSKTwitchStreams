@@ -306,7 +306,31 @@ sfspec:
         assert_x_position(6, 0, 235, 6, %00001111)
     }
 
-    :finish_spec()
+ 
+ 
+    :describe("CopyX")
+
+    :it("copies x position from sprite 6 to 3"); {
+        jsr initState
+        // directly initialize libSprites array for sprite 6
+        lda #1
+        sta libSprites.XHi+6
+        lda #25
+        sta libSprites.XLo+6
+        lda #6
+        sta libSprites.XFrac+6
+        ldy #6
+        jsr libSprites.ApplyX
+        assert_x_position(6, 1, 25, 6, %01000000)
+        
+        ldy #6
+        ldx #3
+        jsr libSprites.CopyX
+
+        assert_x_position(3, 1, 25, 6, %01001000)
+    }
+
+   :finish_spec()
 
 /* custom assert for x position
 testing internal structure and VIC registers */
