@@ -123,9 +123,44 @@ sfspec:
         ldy #7
         jsr libSprites.SetY
 
+        :assert_equal libSprites.Y+7: #130
+        :assert_equal libSprites.YFrac+7: #0
+
         :assert_equal SP0Y + 2*7: #130
     }
 
+    :describe("AddToY")
+
+    :it("adds to y position for sprite 6"); {
+        jsr initState
+
+        lda #120
+        ldy #6
+        jsr libSprites.SetY
+
+        // Fraction 0 + 250 = 250
+        lda #250
+        // Pixel 120 + 3 = 123
+        ldx #3
+        ldy #6
+        jsr libSprites.AddToY
+
+        :assert_equal libSprites.Y+6: #123
+        :assert_equal libSprites.YFrac+6: #250
+        :assert_equal SP0Y + 2*6: #123
+
+        // Add a second time, make the fraction overflow into pixel
+        // Fraction 250 + 10 = 1*256 + 4
+        lda #10
+        // Pixel 123 + 7 + 1 = 131
+        ldx #7
+        ldy #6
+        jsr libSprites.AddToY
+
+        :assert_equal libSprites.Y+6: #131
+        :assert_equal libSprites.YFrac+6: #4
+        :assert_equal SP0Y + 2*6: #131
+    }
 
 
     :finish_spec()
