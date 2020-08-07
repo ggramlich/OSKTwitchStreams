@@ -281,6 +281,31 @@ sfspec:
     }
 
 
+
+    :describe("SubFromX")
+
+    :it("subtracts from x position for sprite 6"); {
+        jsr initState
+        lda #%00001111
+        sta MSIGX
+
+        lda #1
+        ldx #20
+        ldy #6
+        jsr libSprites.SetX
+
+        assert_x_position(6, 1, 20, 0, %01001111)
+
+        // Fraction 256 - 250 = 6 (underflow pixel)
+        lda #250
+        // Pixel (256 + 20) - 40 - 1 = 235
+        ldx #40
+        ldy #6
+        jsr libSprites.SubFromX
+
+        assert_x_position(6, 0, 235, 6, %00001111)
+    }
+
     :finish_spec()
 
 /* custom assert for x position
