@@ -129,6 +129,8 @@ sfspec:
         :assert_equal SP0Y + 2*7: #130
     }
 
+
+
     :describe("AddToY")
 
     :it("adds to y position for sprite 6"); {
@@ -160,6 +162,54 @@ sfspec:
         :assert_equal libSprites.Y+6: #131
         :assert_equal libSprites.YFrac+6: #4
         :assert_equal SP0Y + 2*6: #131
+    }
+
+
+
+    :describe("SubFromY")
+
+    :it("subtracts from y position for sprite 6"); {
+        jsr initState
+
+        lda #120
+        ldy #6
+        jsr libSprites.SetY
+
+        // Fraction 256 - 250 = 6 (causes underflow in px)
+        lda #250
+        // Pixel 120 - 3 - 1 = 116
+        ldx #3
+        ldy #6
+        jsr libSprites.SubFromY
+
+        :assert_equal libSprites.Y+6: #116
+        :assert_equal libSprites.YFrac+6: #6
+        :assert_equal SP0Y + 2*6: #116
+
+        // Subtract a second time, make the fraction underflow into pixel again
+        // Fraction 256 + 6 - 10 = 252
+        lda #10
+        // Pixel 116 - 7 - 1 = 108
+        ldx #7
+        ldy #6
+        jsr libSprites.SubFromY
+
+        :assert_equal libSprites.Y+6: #108
+        :assert_equal libSprites.YFrac+6: #252
+        :assert_equal SP0Y + 2*6: #108
+
+        // Subtract a third time, no underflow this time
+        // Fraction 252 - 30 = 222
+        lda #30
+        // Pixel 108 - 7 = 101
+        ldx #7
+        ldy #6
+        jsr libSprites.SubFromY
+
+        :assert_equal libSprites.Y+6: #101
+        :assert_equal libSprites.YFrac+6: #222
+        :assert_equal SP0Y + 2*6: #101
+
     }
 
 
