@@ -45,38 +45,36 @@ sfspec:
 
     :it("enables sprite 6"); {
         jsr initState
-        ldx #%10001110
-        stx SPENA
 
         lda #1
         ldy #6
         jsr libSprites.SetEnable
 
-        :assert_equal SPENA: #%11001110
+        :assert_equal SPENA: #%01000000
     }
 
     :it("keeps sprite 6 enabled"); {
         jsr initState
-        ldx #%11001110
+        ldx #%01000000
         stx SPENA
 
         lda #1
         ldy #6
         jsr libSprites.SetEnable
 
-        :assert_equal SPENA: #%11001110
+        :assert_equal SPENA: #%01000000
     }
 
     :it("disables sprite 6"); {
         jsr initState
-        ldx #%11001110
+        ldx #%01000000
         stx SPENA
 
         lda #0
         ldy #6
         jsr libSprites.SetEnable
 
-        :assert_equal SPENA: #%10001110
+        :assert_equal SPENA: #0
     }
 
     :finish_spec()
