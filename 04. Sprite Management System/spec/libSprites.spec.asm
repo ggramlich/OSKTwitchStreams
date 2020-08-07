@@ -237,6 +237,47 @@ sfspec:
     }
 
 
+
+    :describe("SetX")
+
+    :it("sets x position for sprite 7 without hi bit"); {
+        jsr initState
+        // init MSIGX, to test, if bit 7 is cleared, and no other bits are affected
+        lda #%10001111
+        sta MSIGX
+
+        lda #0
+        ldx #130
+        ldy #7
+        jsr libSprites.SetX
+
+        :assert_equal libSprites.XHi+7: #0
+        :assert_equal libSprites.XLo+7: #130
+        :assert_equal libSprites.XFrac+7: #0
+
+        :assert_equal SP0X + 2*7: #130
+        :assert_equal MSIGX: #%00001111
+    }
+
+    :it("sets x position for sprite 7 with hi bit"); {
+        jsr initState
+        // init MSIGX, to test, if bit 7 is set, and no other bits are affected
+        lda #%00001111
+        sta MSIGX
+
+        lda #1
+        ldx #12
+        ldy #7
+        jsr libSprites.SetX
+
+        :assert_equal libSprites.XHi+7: #1
+        :assert_equal libSprites.XLo+7: #12
+        :assert_equal libSprites.XFrac+7: #0
+
+        :assert_equal SP0X + 2*7: #12
+        :assert_equal MSIGX: #%10001111
+    }
+
     :finish_spec()
 
 initState:
