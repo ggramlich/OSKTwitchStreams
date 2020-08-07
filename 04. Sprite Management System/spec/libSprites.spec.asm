@@ -278,6 +278,45 @@ sfspec:
         :assert_equal MSIGX: #%10001111
     }
 
+
+
+    :describe("AddToX")
+
+    :it("adds to x position for sprite 6"); {
+        jsr initState
+
+        lda #0
+        ldx #250
+        ldy #6
+        jsr libSprites.SetX
+
+        // initialize fraction to force overflow on first add
+        lda #200
+        sta libSprites.XFrac+6
+
+        :assert_equal libSprites.XHi+6: #0
+        :assert_equal libSprites.XLo+6: #250
+        :assert_equal libSprites.XFrac+6: #200
+
+        :assert_equal SP0X + 2*6: #250
+        :assert_equal MSIGX: #%00000000
+
+        // Fraction 200 + 250 = 256 + 194
+        lda #250
+        // Pixel 250 + 9 + 1 = 256 + 4
+        ldx #9
+        ldy #6
+        jsr libSprites.AddToX
+
+        :assert_equal libSprites.XHi+6: #1
+        :assert_equal libSprites.XLo+6: #4
+        :assert_equal libSprites.XFrac+6: #194
+
+        :assert_equal SP0X + 2*6: #4
+        :assert_equal MSIGX: #%01000000
+    }
+
+
     :finish_spec()
 
 initState:
