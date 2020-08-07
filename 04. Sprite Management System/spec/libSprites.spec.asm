@@ -104,6 +104,30 @@ sfspec:
 
 
 
+    :describe("SetY")
+
+    :it("sets y position for sprite 0"); {
+        jsr initState
+
+        lda #120
+        ldy #0
+        jsr libSprites.SetY
+
+        :assert_equal SP0Y: #120
+    }
+
+    :it("sets y position for sprite 7"); {
+        jsr initState
+
+        lda #130
+        ldy #7
+        jsr libSprites.SetY
+
+        :assert_equal SP0Y + 2*7: #130
+    }
+
+
+
     :finish_spec()
 
 initState:
@@ -147,6 +171,14 @@ initState:
         sta SPRITE0,x
         dex
         bne !loop-
+
+    ldx #(2*MaximumNoOfSprites-1)
+    !loop:
+        sta SP0X,x
+        dex
+        bne !loop-
+
+    sta MSIGX
 
     rts
 }
