@@ -1,3 +1,6 @@
+// Make sure, there is no overlap in memory
+*=$3000
+
 #import "../.ra/deps/c64lib/64spec/lib/64spec.asm"
 #import "../libSprites.asm"
 
@@ -210,6 +213,27 @@ sfspec:
         :assert_equal libSprites.YFrac+6: #222
         :assert_equal SP0Y + 2*6: #101
 
+    }
+
+
+
+    :describe("CopyY")
+
+    :it("copies y position from sprite 6 to 3"); {
+        jsr initState
+        // directly initialize libSprites array for sprite 6
+        lda #116
+        sta libSprites.Y+6
+        lda #6
+        sta libSprites.YFrac+6
+        
+        ldy #6
+        ldx #3
+        jsr libSprites.CopyY
+
+        :assert_equal libSprites.Y+3: #116
+        :assert_equal libSprites.YFrac+3: #6
+        :assert_equal SP0Y + 2*3: #116
     }
 
 
