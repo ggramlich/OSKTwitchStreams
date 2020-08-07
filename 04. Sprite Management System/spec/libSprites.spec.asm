@@ -1,27 +1,6 @@
 #import "../.ra/deps/c64lib/64spec/lib/64spec.asm"
 #import "../libSprites.asm"
 
-initState:
-{
-
-  .const MARKER = %10110101
-  lda #MARKER
-  sta libSprites.Workspace
-
-  ldx #0
-
-  !loop: {
-    lda #0
-    sta libSprites.Enabled,x
-    inx
-    lda #MARKER
-    cmp libSprites.Enabled,x
-    bne !loop-
-  }
-  lda #0
-  sta SPENA
-  rts
-}
 
 sfspec:
     :init_spec()
@@ -101,3 +80,41 @@ sfspec:
     }
 
     :finish_spec()
+
+initState:
+{
+    // Unfortunately the constant libSprites.MaximumNoOfSprites is not accessible
+    .const MaximumNoOfSprites = 8
+    .const MARKER = %10110101
+    
+    // erase all entries in the libSprites arrays
+    
+    // set an arbitrary MARKER on the last entry of Workspace (which is the last array)
+    ldx #(MaximumNoOfSprites-1)
+    lda #MARKER
+    sta libSprites.Workspace,x
+
+    ldx #0
+
+    // erase until MARKER is found
+    !loop: {
+        lda #0
+        sta libSprites.Enabled,x
+        inx
+        lda #MARKER
+        cmp libSprites.Enabled,x
+        bne !loop-
+    }
+    // overwrite MARKER
+    lda #0
+    sta libSprites.Enabled,x
+
+    // Make sure, that the loop actually ran to our MARKER and not accidentally found it at some address before
+    ldx #(MaximumNoOfSprites-1)
+    :assert_equal libSprites.Workspace,x: #0
+
+    // init registers which are affected by the library routines
+    lda #0
+    sta SPENA
+    rts
+}
