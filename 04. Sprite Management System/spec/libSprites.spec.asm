@@ -116,7 +116,7 @@ sfspec:
         ldy #0
         jsr libSprites.SetY
 
-        :assert_equal SP0Y: #120
+        assert_y_position(0, 120, 0)
     }
 
     :it("sets y position for sprite 7"); {
@@ -126,10 +126,7 @@ sfspec:
         ldy #7
         jsr libSprites.SetY
 
-        :assert_equal libSprites.Y+7: #130
-        :assert_equal libSprites.YFrac+7: #0
-
-        :assert_equal SP0Y + 2*7: #130
+        assert_y_position(7, 130, 0)
     }
 
 
@@ -150,9 +147,7 @@ sfspec:
         ldy #6
         jsr libSprites.AddToY
 
-        :assert_equal libSprites.Y+6: #123
-        :assert_equal libSprites.YFrac+6: #250
-        :assert_equal SP0Y + 2*6: #123
+        assert_y_position(6, 123, 250)
 
         // Add a second time, make the fraction overflow into pixel
         // Fraction 250 + 10 = 1*256 + 4
@@ -162,9 +157,7 @@ sfspec:
         ldy #6
         jsr libSprites.AddToY
 
-        :assert_equal libSprites.Y+6: #131
-        :assert_equal libSprites.YFrac+6: #4
-        :assert_equal SP0Y + 2*6: #131
+        assert_y_position(6, 131, 4)
     }
 
 
@@ -185,9 +178,7 @@ sfspec:
         ldy #6
         jsr libSprites.SubFromY
 
-        :assert_equal libSprites.Y+6: #116
-        :assert_equal libSprites.YFrac+6: #6
-        :assert_equal SP0Y + 2*6: #116
+        assert_y_position(6, 116, 6)
 
         // Subtract a second time, make the fraction underflow into pixel again
         // Fraction 256 + 6 - 10 = 252
@@ -197,9 +188,7 @@ sfspec:
         ldy #6
         jsr libSprites.SubFromY
 
-        :assert_equal libSprites.Y+6: #108
-        :assert_equal libSprites.YFrac+6: #252
-        :assert_equal SP0Y + 2*6: #108
+        assert_y_position(6, 108, 252)
 
         // Subtract a third time, no underflow this time
         // Fraction 252 - 30 = 222
@@ -209,10 +198,7 @@ sfspec:
         ldy #6
         jsr libSprites.SubFromY
 
-        :assert_equal libSprites.Y+6: #101
-        :assert_equal libSprites.YFrac+6: #222
-        :assert_equal SP0Y + 2*6: #101
-
+        assert_y_position(6, 101, 222)
     }
 
 
@@ -231,9 +217,7 @@ sfspec:
         ldx #3
         jsr libSprites.CopyY
 
-        :assert_equal libSprites.Y+3: #116
-        :assert_equal libSprites.YFrac+3: #6
-        :assert_equal SP0Y + 2*3: #116
+        assert_y_position(3, 116, 6)
     }
 
 
@@ -251,12 +235,7 @@ sfspec:
         ldy #7
         jsr libSprites.SetX
 
-        :assert_equal libSprites.XHi+7: #0
-        :assert_equal libSprites.XLo+7: #130
-        :assert_equal libSprites.XFrac+7: #0
-
-        :assert_equal SP0X + 2*7: #130
-        :assert_equal MSIGX: #%00001111
+        assert_x_position(7, 0, 130, 0, %00001111)
     }
 
     :it("sets x position for sprite 7 with hi bit"); {
@@ -270,12 +249,7 @@ sfspec:
         ldy #7
         jsr libSprites.SetX
 
-        :assert_equal libSprites.XHi+7: #1
-        :assert_equal libSprites.XLo+7: #12
-        :assert_equal libSprites.XFrac+7: #0
-
-        :assert_equal SP0X + 2*7: #12
-        :assert_equal MSIGX: #%10001111
+        assert_x_position(7, 1, 12, 0, %10001111)
     }
 
 
@@ -294,12 +268,7 @@ sfspec:
         lda #200
         sta libSprites.XFrac+6
 
-        :assert_equal libSprites.XHi+6: #0
-        :assert_equal libSprites.XLo+6: #250
-        :assert_equal libSprites.XFrac+6: #200
-
-        :assert_equal SP0X + 2*6: #250
-        :assert_equal MSIGX: #%00000000
+        assert_x_position(6, 0, 250, 200, %00000000)
 
         // Fraction 200 + 250 = 256 + 194
         lda #250
@@ -308,16 +277,31 @@ sfspec:
         ldy #6
         jsr libSprites.AddToX
 
-        :assert_equal libSprites.XHi+6: #1
-        :assert_equal libSprites.XLo+6: #4
-        :assert_equal libSprites.XFrac+6: #194
-
-        :assert_equal SP0X + 2*6: #4
-        :assert_equal MSIGX: #%01000000
+        assert_x_position(6, 1, 4, 194, %01000000)
     }
 
 
     :finish_spec()
+
+/* custom assert for x position
+testing internal structure and VIC registers */
+.macro assert_x_position(sprite, xhi, xlo, xfrac, msigx) {
+        :assert_equal libSprites.XHi + sprite:   #xhi
+        :assert_equal libSprites.XLo + sprite:   #xlo
+        :assert_equal libSprites.XFrac + sprite: #xfrac
+
+        :assert_equal SP0X + 2*sprite: #xlo
+        :assert_equal MSIGX: #msigx
+}
+
+/* custom assert for y position
+testing internal structure and VIC register */
+.macro assert_y_position(sprite, y, yfrac) {
+        :assert_equal libSprites.Y + sprite:   #y
+        :assert_equal libSprites.YFrac + sprite: #yfrac
+
+        :assert_equal SP0Y + 2*sprite: #y
+}
 
 initState:
 {
