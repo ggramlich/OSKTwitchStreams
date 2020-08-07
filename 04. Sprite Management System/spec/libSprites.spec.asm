@@ -77,6 +77,33 @@ sfspec:
         :assert_equal SPENA: #0
     }
 
+
+
+
+    :describe("SetFrame")
+
+    :it("sets some frame for sprite 0"); {
+        jsr initState
+
+        lda #170
+        ldy #0
+        jsr libSprites.SetFrame
+
+        :assert_equal SPRITE0: #170
+    }
+
+    :it("sets some frame for sprite 7"); {
+        jsr initState
+
+        lda #180
+        ldy #7
+        jsr libSprites.SetFrame
+
+        :assert_equal SPRITE0+7: #180
+    }
+
+
+
     :finish_spec()
 
 initState:
@@ -114,5 +141,12 @@ initState:
     // init registers which are affected by the library routines
     lda #0
     sta SPENA
+    
+    ldx #MaximumNoOfSprites-1
+    !loop:
+        sta SPRITE0,x
+        dex
+        bne !loop-
+
     rts
 }
